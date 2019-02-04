@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 
 ##########################################
 #
@@ -16,7 +16,7 @@
 
 from keras.preprocessing import sequence
 from keras.models import Sequential
-from keras.layers import LSTM, Embedding,BatchNormalization, Dropout, TimeDistributed, Dense,Concatenate,Merge, RepeatVector, Activation
+from keras.layers import LSTM, Embedding,BatchNormalization, Dropout, TimeDistributed, Dense,Concatenate,Merge, RepeatVector, Activation, add
 from keras.optimizers import Adam, RMSprop
 from keras.layers.wrappers import Bidirectional
 from keras.applications.inception_v3 import InceptionV3
@@ -215,29 +215,22 @@ EMBEDDING_DIM = 300
 
 # Model
 
-image_model = Sequential()
-image_model.add(Dense(EMBEDDING_DIM, input_shape=(2048,), activation='relu'))
-image_model.add(RepeatVector(max_length))
+image_inputs = Input(shape=(2048,))
+image_model = Dropout(0.5)(image_inputs)
+image_model_D = Dense(EMBEDDING_DIM, activation='relu')(image_model)
 
-   
-lang_model = Sequential()
-lang_model.add(Embedding(vocab_size,EMBEDDING_DIM , input_length=max_length))
-lang_model.add(Bidirectional(LSTM(256,return_sequences=True)))
-lang_model.add(Dropout(0.5))
-lang_model.add(BatchNormalization())
-lang_model.add(TimeDistributed(Dense(EMBEDDING_DIM)))
+lang_inputs = Input(shape=(max_length,))
+lang_model = Embedding(vocab_size, EMBEDDING_DIM, mask_zero=True)(lang_inputs)
+lang_model_d = Dropout(0.5)(lang_model)
+lang_model_s = LSTM(256)(lang_model_d)
 
-   
-final_model = Sequential()
-final_model.add(Merge([image_model, lang_model], mode='concat'))
-#final_model.add(Concatenate([image_model, lang_model]), axis=-1)
-final_model.add(Dropout(0.5))
-final_model.add(BatchNormalization())
-final_model.add(Bidirectional(LSTM(1000,return_sequences=False)))
+decoder = add([image_model_D, lang_model_s])
+decoder_d = Dense(256, activation='relu')(decoder)
 
-final_model.add(Dense(vocab_size))
-final_model.add(Activation('softmax'))
+outputs = Dense(vocab_size, activation='softmax')(decoder_d)
+final_model = Model(inputs=[image_inputs, lang_inputs], outputs=outputs)
 print ("Model created!")
+
 
 
 final_model.compile(loss='categorical_crossentropy', optimizer='Adam', metrics=['accuracy'])
