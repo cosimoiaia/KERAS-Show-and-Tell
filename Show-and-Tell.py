@@ -133,7 +133,7 @@ encoding_train = pickle.load(open('encoded_train_images_inceptionV3.p', 'rb'))
 
 encoding_test = {}
 #for img in tqdm(test_imgs_id):
-#    path = images+str(img)
+#    path = images_path+str(img)
 #    encoding_test[img] = encode(path)
 
 #with open("encoded_test_images_inceptionV3.p", "wb") as encoded_pickle:
