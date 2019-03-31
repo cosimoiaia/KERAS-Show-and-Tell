@@ -132,12 +132,12 @@ with open("encoded_train_images_inceptionV3.p", "wb") as encoded_pickle:
 encoding_train = pickle.load(open('encoded_train_images_inceptionV3.p', 'rb'))
 
 encoding_test = {}
-for img in tqdm(test_imgs_id):
-    path = images+str(img)
-    encoding_test[img] = encode(path)
+#for img in tqdm(test_imgs_id):
+#    path = images+str(img)
+#    encoding_test[img] = encode(path)
 
-with open("encoded_test_images_inceptionV3.p", "wb") as encoded_pickle:
-    pickle.dump(encoding_test, encoded_pickle)
+#with open("encoded_test_images_inceptionV3.p", "wb") as encoded_pickle:
+#    pickle.dump(encoding_test, encoded_pickle)
 
 
 encoding_test = pickle.load(open('encoded_test_images_inceptionV3.p', 'rb'))
@@ -180,7 +180,7 @@ max_length = max(caption_length)
 def data_process(batch_size):
     partial_captions = []
     next_words = []
-    images_path= []
+    images= []
     total_count = 0
     while 1:
     
@@ -199,14 +199,14 @@ def data_process(batch_size):
 
                 if total_count>=batch_size:
                     next_words = np.asarray(next_words)
-                    images_path= np.asarray(images)
+                    images= np.asarray(images)
                     partial_captions = sequence.pad_sequences(partial_captions, maxlen=max_length, padding='post')
                     total_count = 0
                 
                     yield [[images, partial_captions], next_words]
                     partial_captions = []
                     next_words = []
-                    images_path= []
+                    images= []
 
 
 #------ Now we build the encoder-decoder model ----------------------------------------------#
