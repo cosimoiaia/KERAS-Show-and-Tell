@@ -131,13 +131,13 @@ with open("encoded_train_images_inceptionV3.p", "wb") as encoded_pickle:
 
 encoding_train = pickle.load(open('encoded_train_images_inceptionV3.p', 'rb'))
 
-encoding_test = {}
-#for img in tqdm(test_imgs_id):
-#    path = images_path+str(img)
-#    encoding_test[img] = encode(path)
+ncoding_test = {}
+for img in tqdm(test_imgs_id):
+    path = images_path+str(img)
+    encoding_test[img] = encode(path)
 
-#with open("encoded_test_images_inceptionV3.p", "wb") as encoded_pickle:
-#    pickle.dump(encoding_test, encoded_pickle)
+with open("encoded_test_images_inceptionV3.p", "wb") as encoded_pickle:
+    pickle.dump(encoding_test, encoded_pickle)
 
 
 encoding_test = pickle.load(open('encoded_test_images_inceptionV3.p', 'rb'))
@@ -217,7 +217,7 @@ EMBEDDING_DIM = 300
 
 image_inputs = Input(shape=(2048,))
 image_model = Dropout(0.5)(image_inputs)
-image_model_D = Dense(EMBEDDING_DIM, activation='relu')(image_model)
+image_model_D = Dense(256, activation='relu')(image_model)
 
 lang_inputs = Input(shape=(max_length,))
 lang_model = Embedding(vocab_size, EMBEDDING_DIM, mask_zero=True)(lang_inputs)
